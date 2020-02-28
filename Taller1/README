@@ -1,0 +1,9 @@
+- To compile the source code, in the top directory run:
+>> make
+
+- To run the programs, first run the following command:
+>> cd bin
+Then, for the first exercise run:
+>> ./problem1
+For the second exercise run:
+>> ./problem2
