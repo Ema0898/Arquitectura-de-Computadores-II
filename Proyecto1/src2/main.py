@@ -11,20 +11,18 @@ def process(storage, event, label):
   texto = tk.StringVar()
   texto.set(msg)
   label.config(textvariable=texto)
-  print("New message: {0}".format(msg))
+  #print("New message: {0}".format(msg))
 
 
 def main():
   message_queue = queue.Queue()
   root = tk.Tk()
 
-  lock = threading.Lock()
+  #lock = threading.Lock()
 
-  chip1 = Chip(0, 2, message_queue, root, lock)
-  chip1.startCores()
-
-  chip1 = Chip(1, 2, message_queue, root, lock)
-  chip1.startCores()
+  chip = Chip(0, message_queue, root)
+  chip.setDaemon(True)
+  chip.start()
 
   label = Label(root)
   label.pack()

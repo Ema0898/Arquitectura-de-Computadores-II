@@ -1,9 +1,11 @@
 import numpy as np
 import time
+import threading
 
 
-class Processor:
+class Processor(threading.Thread):
   def __init__(self, name, chipNumber, storage):
+    threading.Thread.__init__(self)
 
     self._name = name
     self._chipNumber = chipNumber

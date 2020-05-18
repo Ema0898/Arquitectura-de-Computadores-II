@@ -40,8 +40,8 @@ from chip import Chip
 # bus.petition("P1", 12, 150, "WM")
 # print(bus.petition("P1", 12, 150, "RM"))
 
-# core = Core("P0", 0, None)
+# core = Core("P0", 0, None, None)
 # core.runCore()
 
 chip = Chip(0)
-chip.startCores()
+chip.runChip()
