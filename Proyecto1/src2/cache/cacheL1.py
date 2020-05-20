@@ -45,30 +45,25 @@ class CacheL1:
       self._lines.append(CacheLineL1())
 
   def getLine(self, direction):
-    for line in self._lines:
-      if line.getTag() == direction:
-        return line
-
-    return -1
+    return self._lines[direction % 2]
 
   def getLineByIndex(self, index):
     return self._lines[index]
 
-  def setLineByIndex(self, index, state, tag, data, vBit, dBit):
+  def setLineByIndex(self, index, state, tag, data):
     self._lines[index].setTag(tag)
-    self._lines[index].setData(tag)
+    self._lines[index].setData(data)
     self._lines[index].setState(state)
-    self._lines[index].setVBit(vBit)
-    self._lines[index].setDBit(dBit)
+    self._lines[index].setVBit(1)
+    self._lines[index].setDBit(0)
+    # self.printCache()
 
-    if state == 'M':
-      self._lines[index].setVBit(1)
-      self._lines[index].setDBit(1)
-
-    if state == 'S':
-      self._lines[index].setVBit(1)
-      self._lines[index].setDBit(0)
-
-    if state == 'I':
-      self._lines[index].setVBit(0)
-      self._lines[index].setDBit(0)
+  def printCache(self):
+    for i in range(2):
+      print("{}, {}, {}, {}, {}".format(
+          self._lines[i].getState(),
+          self._lines[i].getVBit(),
+          self._lines[i].getDBit(),
+          self._lines[i].getData(),
+          self._lines[i].getTag()
+      ))

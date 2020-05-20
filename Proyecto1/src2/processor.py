@@ -16,7 +16,7 @@ class Processor(threading.Thread):
 
     counter = 0
 
-    while counter < 5:
+    while counter < 10:
       instr = round(np.random.normal(1, 1)) % 3
       direction = round(np.random.normal(8, 4)) % 16
       dirValue = round(np.random.normal(32768, 10000)) % 65536

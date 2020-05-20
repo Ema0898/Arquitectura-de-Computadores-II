@@ -5,79 +5,92 @@ class ControllerL1:
   def __init__(self):
     self.cache = CacheL1()
 
-  def controlCache(self, bus_signal, cpu_signal, direction, cpu_data):
+  def writeCache(self, direction, value):
+    #print("Writing data on cache fo dir {}, value {}".format(direction, value))
+    self.cache.setLineByIndex(direction % 2, "S", direction, value)
+
+  def controlCache(self, signal, direction, cpu_data, owner):
     line = self.cache.getLine(direction)
 
-    if line == -1:
-      print("Read Miss go to the Bus and get the data from memory")
+    if line.getVBit() == 0:
+      #print("Generate Read miss fo dir {} and {}".format(direction, owner))
+      # self.cache.printCache()
+      return "RM"
     else:
-      if line.getVBit() == 0:
-        print("Generate Read miss")
-      else:
-        self._msiMachine(bus_signal, cpu_signal, direction, cpu_data)
+      return self._msiMachine(signal, direction, cpu_data, owner)
 
-  def _msiMachine(self, bus_signal, cpu_signal, direction, cpu_data):
+  def _msiMachine(self, signal, direction, cpu_data, owner):
     line = self.cache.getLine(direction)
 
     if line.getState() == 'M':
-      if bus_signal == 'RM':
-        self._m_to_s(line)
+      if signal == 'RM':
+        self._m_to_s(line, owner)
         print('Stop System to Write on Memory')
 
-      elif bus_signal == 'WM':
-        self._m_to_i(line)
+      elif signal == 'WM':
+        self._m_to_i(line, owner)
 
-      elif cpu_signal == 'WRITE':
+      elif signal == 'WRITE':
         line.setData(cpu_data)
         print('Bus Write Miss')
+        return "WM"
 
     elif line.getState() == 'S':
-      if bus_signal == 'WM':
-        self._s_to_i(line)
-      elif cpu_signal == 'WRITE':
-        self._s_to_m(line)
+      if signal == 'WM':
+        self._s_to_i(line, owner)
+      elif signal == 'WRITE':
+        self._s_to_m(line, owner)
         line.setData(cpu_data)
         print('Bus Write Miss')
+        return "WM"
 
     elif line.getState() == 'I':
-      if cpu_signal == 'WRITE':
-        self._i_to_m(line)
+      if signal == 'WRITE':
+        self._i_to_m(line, owner)
         line.setData(cpu_data)
         print('Bus Write Miss')
-      elif cpu_signal == 'READ':
-        self._i_to_s(line)
+        return "WM"
+      elif signal == 'READ':
+        self._i_to_s(line, owner)
         print('Bus Read Miss')
+        return "RM"
 
     else:
       print("Cache state error")
       return
 
-  def _m_to_s(self, line):
+  def _m_to_s(self, line, owner):
     line.setState('S')
     line.setVBit(1)
     line.setDBit(0)
+    print("M to S from {}".format(owner))
 
-  def _m_to_i(self, line):
+  def _m_to_i(self, line, owner):
     line.setState('I')
     line.setVBit(0)
     line.setDBit(0)
+    print("M to I from {}".format(owner))
 
-  def _s_to_i(self, line):
+  def _s_to_i(self, line, owner):
     line.setState('I')
     line.setVBit(0)
     line.setDBit(0)
+    print("S to I from {}".format(owner))
 
-  def _s_to_m(self, line):
+  def _s_to_m(self, line, owner):
     line.setState('M')
     line.setVBit(1)
     line.setDBit(1)
+    print("S to M from {}".format(owner))
 
-  def _i_to_s(self, line):
+  def _i_to_s(self, line, owner):
     line.setState('S')
     line.setVBit(1)
     line.setDBit(0)
+    print("I to S from {}".format(owner))
 
-  def _i_to_m(self, line):
+  def _i_to_m(self, line, owner):
     line.setState('M')
     line.setVBit(1)
     line.setDBit(1)
+    print("I to M from {}".format(owner))

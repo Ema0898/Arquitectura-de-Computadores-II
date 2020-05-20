@@ -44,4 +44,5 @@ from chip import Chip
 # core.runCore()
 
 chip = Chip(0)
-chip.runChip()
+chip.start()
+chip.join()
