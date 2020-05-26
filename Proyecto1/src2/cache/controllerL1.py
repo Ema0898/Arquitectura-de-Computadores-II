@@ -8,6 +8,7 @@ class ControllerL1:
   def writeCache(self, direction, value):
     #print("Writing data on cache fo dir {}, value {}".format(direction, value))
     self.cache.setLineByIndex(direction % 2, "S", direction, value)
+    self.cache.printCache()
 
   def controlCache(self, signal, direction, cpu_data, owner):
     line = self.cache.getLine(direction)

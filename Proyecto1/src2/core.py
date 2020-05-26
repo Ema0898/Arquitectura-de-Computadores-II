@@ -22,25 +22,30 @@ class Core(threading.Thread):
     # self._cpu.setDaemon(True)
     self._cpu.start()
 
+  def writeCache(self, direction, value):
+    print("Write cache for {}".format(self._name))
+    self._cacheController.writeCache(direction, value)
+
   def run(self):
     counter = 0
     while (counter < 10):
 
-      cpu_msg = self._cpuQueue.get().split(',')
       bus_msg = self._busQueueIn.get()
 
       if bus_msg != "Ready":
         msgSplit = bus_msg.split(',')
         # Write to cache
         # print(bus_msg)
-        if msgSplit[0] == "READ":
-          # print("Writing..")
-          self._cacheController.writeCache(int(msgSplit[1]), int(msgSplit[2]))
-        # Check bus signals
-        else:
-          #print("Updating bus signals for {}".format(self._name))
-          self._cacheController.controlCache(
-              msgSplit[0], int(msgSplit[1]), 0, self._name)
+        # if msgSplit[0] == "READ":
+        #   # print("Writing..")
+        #   self._cacheController.writeCache(int(msgSplit[1]), int(msgSplit[2]))
+        # # Check bus signals
+        # else:
+        #print("Updating bus signals for {}".format(self._name))
+        self._cacheController.controlCache(
+            msgSplit[0], int(msgSplit[1]), 0, self._name)
+
+      cpu_msg = self._cpuQueue.get().split(',')
 
       # Check processor signals
       busDataOut = self._cacheController.controlCache(

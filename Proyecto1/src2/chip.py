@@ -54,14 +54,11 @@ class Chip(threading.Thread):
 
       busReturn = self._bus.petition(busPetition)
 
-      if busReturn is not None:
+      if busSplit[3] == "RM":
         if busSplit[0] == "P0":
-          # print("Bus return for P0 address {} {}".format(
-          #     busSplit[1], busReturn))
-          self._queuesOut[0].put("READ,{},{}".format(busSplit[1], busReturn))
+          self._cores[0].writeCache(int(busSplit[1]), busReturn)
         elif busSplit[0] == "P1":
-          #print("Bus return for P1")
-          self._queuesOut[1].put("READ,{},{}".format(busSplit[1], busReturn))
+          self._cores[1].writeCache(int(busSplit[1]), busReturn)
 
       # self._lock.acquire()
 
