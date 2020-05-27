@@ -23,7 +23,7 @@ class Core(threading.Thread):
     self._cpu.start()
 
   def writeCache(self, direction, value):
-    print("Write cache for {}".format(self._name))
+    # print("Write cache for {}".format(self._name))
     self._cacheController.writeCache(direction, value)
 
   def run(self):
@@ -42,13 +42,13 @@ class Core(threading.Thread):
         # # Check bus signals
         # else:
         #print("Updating bus signals for {}".format(self._name))
-        self._cacheController.controlCache(
+        self._cacheController.msiMachine(
             msgSplit[0], int(msgSplit[1]), 0, self._name)
 
       cpu_msg = self._cpuQueue.get().split(',')
 
       # Check processor signals
-      busDataOut = self._cacheController.controlCache(
+      busDataOut = self._cacheController.msiMachine(
           cpu_msg[1], int(cpu_msg[2]), int(cpu_msg[3]), self._name)
 
       self._lock.acquire()

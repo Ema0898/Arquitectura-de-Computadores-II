@@ -3,7 +3,7 @@ from tkinter import Label
 import queue
 import threading
 
-from chip import Chip
+from cpuSystem import CpuSystem
 
 
 def process(storage, event, label):
@@ -20,7 +20,7 @@ def main():
 
   #lock = threading.Lock()
 
-  chip = Chip(0, message_queue, root)
+  chip = CpuSystem(message_queue, root)
   chip.setDaemon(True)
   chip.start()
 

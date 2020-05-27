@@ -8,33 +8,24 @@ class ControllerL1:
   def writeCache(self, direction, value):
     #print("Writing data on cache fo dir {}, value {}".format(direction, value))
     self.cache.setLineByIndex(direction % 2, "S", direction, value)
-    self.cache.printCache()
+    # self.cache.printCache()
 
-  def controlCache(self, signal, direction, cpu_data, owner):
+  def msiMachine(self, signal, direction, cpu_data, owner):
     line = self.cache.getLine(direction)
-
-    if line.getVBit() == 0:
-      #print("Generate Read miss fo dir {} and {}".format(direction, owner))
-      # self.cache.printCache()
-      return "RM"
-    else:
-      return self._msiMachine(signal, direction, cpu_data, owner)
-
-  def _msiMachine(self, signal, direction, cpu_data, owner):
-    line = self.cache.getLine(direction)
+    response = "NOP"
 
     if line.getState() == 'M':
       if signal == 'RM':
         self._m_to_s(line, owner)
-        print('Stop System to Write on Memory')
+        # print('Stop System to Write on Memory')
 
       elif signal == 'WM':
         self._m_to_i(line, owner)
 
       elif signal == 'WRITE':
         line.setData(cpu_data)
-        print('Bus Write Miss')
-        return "WM"
+        # print('Bus Write Miss')
+        response = "WM"
 
     elif line.getState() == 'S':
       if signal == 'WM':
@@ -42,23 +33,24 @@ class ControllerL1:
       elif signal == 'WRITE':
         self._s_to_m(line, owner)
         line.setData(cpu_data)
-        print('Bus Write Miss')
-        return "WM"
+        # print('Bus Write Miss')
+        response = "WM"
 
     elif line.getState() == 'I':
       if signal == 'WRITE':
         self._i_to_m(line, owner)
         line.setData(cpu_data)
-        print('Bus Write Miss')
-        return "WM"
+        # print('Bus Write Miss')
+        response = "WM"
       elif signal == 'READ':
         self._i_to_s(line, owner)
-        print('Bus Read Miss')
-        return "RM"
+        # print('Bus Read Miss')
+        response = "RM"
 
     else:
       print("Cache state error")
-      return
+
+    return response
 
   def _m_to_s(self, line, owner):
     line.setState('S')

@@ -1,14 +1,13 @@
 import threading
 import queue
-import time
 
 from core import Core
-from bus import Bus
+from cache.controllerL2 import ControllerL2
 
 
 class Chip(threading.Thread):
 
-  def __init__(self, chipNumber):
+  def __init__(self, chipNumber, queueMemIn, queueMemOut):
     threading.Thread.__init__(self)
 
     self._cores = []
@@ -17,10 +16,11 @@ class Chip(threading.Thread):
     self._queuesOut = []
     self._chipNumber = chipNumber
     self._lock = threading.Lock()
-    self._bus = Bus()
+    self._chipName = "CH{}".format(chipNumber)
+    self._queueMemIn = queueMemIn
+    self._queueMemOut = queueMemOut
 
-    # self.guiQueue = guiQueue
-    # self.mainwin = mainwin
+    self._controller = ControllerL2()
 
   def _broadcast(self, data):
     for i in range(2):
@@ -49,23 +49,40 @@ class Chip(threading.Thread):
       busPetition = self._queuesIn.get()
       busSplit = busPetition.split(',')
 
+      # Cache L2 control
+      owner = "{}.{}.{}".format(
+          self._chipName, busSplit[0], int(busSplit[1]) % 2)
+
+      busReturn, _ = self._controller.msiMachineL1(
+          busSplit[3], int(busSplit[1]), int(busSplit[2]), owner)
+
+      # Queue to main memory
+      memoryMsg = "{},{},{},{}".format(
+          busReturn, owner, busSplit[1], busSplit[2])
+      self._queueMemOut.put(memoryMsg)
+
+      memReturn = self._queueMemIn.get()
+
+      # Queue to External L2
+
       # broadcast direction and signal
       self._broadcast("{},{}".format(busSplit[3], busSplit[1]))
 
-      busReturn = self._bus.petition(busPetition)
-
+      # Set processor data in case of Read Miss
       if busSplit[3] == "RM":
+        if memReturn is not None:
+          self._controller.writeCache(
+              int(busSplit[1]), memReturn, [owner])
         if busSplit[0] == "P0":
-          self._cores[0].writeCache(int(busSplit[1]), busReturn)
+          if busReturn == "READ" and memReturn is not None:
+            self._cores[0].writeCache(int(busSplit[1]), memReturn)
+          else:
+            self._cores[0].writeCache(int(busSplit[1]), busReturn)
+
         elif busSplit[0] == "P1":
-          self._cores[1].writeCache(int(busSplit[1]), busReturn)
-
-      # self._lock.acquire()
-
-      # self.guiQueue.put("Hola {}".format(counter))
-      # self.mainwin.event_generate('<<MessageGenerated>>')
-      # time.sleep(3)
-
-      # self._lock.release()
+          if busReturn == "READ" and memReturn is not None:
+            self._cores[0].writeCache(int(busSplit[1]), memReturn)
+          else:
+            self._cores[0].writeCache(int(busSplit[1]), busReturn)
 
       counter += 1

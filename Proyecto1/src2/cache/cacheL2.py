@@ -30,7 +30,8 @@ class CacheLineL2:
     self._owners = owners
 
   def appendOwner(self, owner):
-    self._owners.append(owner)
+    if owner not in self._owners:
+      self._owners.append(owner)
 
   def cleanOwners(self):
     self._owners.clear()

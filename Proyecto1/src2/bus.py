@@ -1,18 +1,13 @@
-from mainMemory import MainMemory
+from cache.controllerL2 import ControllerL2
 
 
 class Bus:
   def __init__(self):
-    self._memory = MainMemory()
+    self._controller = ControllerL2()
 
-  def petition(self, request):
-    #print("From bus got {}".format(request))
-    data = request.split(',')
-    if data[3] == "WM":
-      print("Writing data to memory")
-      self._memory.setValue(data[0], int(data[1]), int(data[2]))
-      return None
+  def getController(self):
+    return self._controller
 
-    elif data[3] == "RM":
-      #print("Returning data from memory to {}".format(data[0]))
-      return self._memory.getValue(int(data[1]))
+  def petition(self, signal, direction, data, owner):
+    # owner, direction, value, signal
+    return self._controller.msiMachine(signal, direction, data, owner, None)

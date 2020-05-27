@@ -9,46 +9,19 @@ class ControllerL2:
     self.cache.setLineByIndex(direction % 4, "DS", owner, direction, value)
     self.cache.printCache()
 
-  def controlCache(self, signal, direction, cpu_data, owner, extOwner):
-    line = self.cache.getLine(direction)
-
-    if line.getState() == "DI":
-      return "READ"
-    else:
-      return self._msiMachine(signal, direction, cpu_data, owner, extOwner)
-
-  def _msiMachine(self, signal, direction, cpu_data, owner, extOwner):
+  def msiMachineL2(self, signal, direction, extOwner):
     line = self.cache.getLine(direction)
 
     if line.getState() == 'DM':
-      if signal == 'RM':
-        self._dm_to_ds(line, owner)
-        return line.getData()
-
-      elif signal == 'WM':
-        line.setData(cpu_data)
-        print('Bus Write Miss')
-        return ("WRITE", "WML2")
-
-      elif signal == 'WML2':
+      if signal == 'WML2':
         self._dm_to_di(line)
-        print("Broadcast Invalid for L1")
+        #print("Broadcast Invalid for L1")
 
       elif signal == "RML2":
         self._dm_to_ds(line, extOwner)
 
     elif line.getState() == 'DS':
-      if signal == 'WM':
-        self._ds_to_dm(line, owner)
-        line.setData(cpu_data)
-        print('Bus Write Miss')
-        return ("WRITE", "WML2")
-
-      elif signal == "RM":
-        line.appendOwner(owner)
-        return (line.getData(), "RML2")
-
-      elif signal == 'WML2':
+      if signal == 'WML2':
         self._ds_to_di(line)
         print("Broadcast Invalid for L1")
 
@@ -56,23 +29,54 @@ class ControllerL2:
         line.appendOwner(extOwner)
 
     elif line.getState() == 'DI':
+      if signal == "RML2":
+        self._di_to_ds(line, extOwner)
+
+  def msiMachineL1(self, signal, direction, cpu_data, owner):
+
+    if signal == "NOP":
+      return ("", "")
+
+    line = self.cache.getLine(direction)
+    response = ()
+
+    if line.getState() == 'DM':
+      if signal == 'RM':
+        self._dm_to_ds(line, owner)
+        response = (line.getData(), "")
+
+      elif signal == 'WM':
+        line.setData(cpu_data)
+        #print('Bus Write Miss')
+        response = ("WRITE", "WML2")
+
+    elif line.getState() == 'DS':
+      if signal == 'WM':
+        self._ds_to_dm(line, owner)
+        line.setData(cpu_data)
+        #print('Bus Write Miss')
+        response = ("WRITE", "WML2")
+
+      elif signal == "RM":
+        line.appendOwner(owner)
+        response = (line.getData(), "RML2")
+
+    elif line.getState() == 'DI':
       if signal == 'WM':
         self._di_to_dm(line, owner)
         line.setData(cpu_data)
-        print('Bus Write Miss')
-        return ("WRITE", "WML2")
+        #print('Bus Write Miss')
+        response = ("WRITE", "WML2")
 
       elif signal == 'RM':
         self._di_to_ds(line, owner)
-        print('Bus Read Miss')
-        return ("READ", "RML2")
-
-      elif signal == "RML2":
-        self._di_to_ds(line, extOwner)
+        #print('Bus Read Miss')
+        response = ("READ", "RML2")
 
     else:
       print("Cache state error")
-      return
+
+    return response
 
   def _dm_to_ds(self, line, owner):
     line.setState('DS')

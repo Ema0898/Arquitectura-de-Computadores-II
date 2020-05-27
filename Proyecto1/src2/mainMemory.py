@@ -27,9 +27,12 @@ class MainMemory:
       self._mem.append(MemoryLine())
       self._mem[i].setData(round(np.random.normal(32768, 10000)) % 65536)
 
-  def getValue(self, direction):
-    return self._mem[direction].getData()
+  def controlMemory(self, signal, owner, direction, value):
+    if signal == "WRITE":
+      print("Write data to memory")
+      self._mem[direction].setData(value)
+      self._mem[direction].setOwner(owner)
 
-  def setValue(self, owner, direction, value):
-    self._mem[direction].setData(value)
-    self._mem[direction].setOwner(owner)
+    elif signal == "READ":
+      print("Returning data from memory")
+      return self._mem[direction].getData()
