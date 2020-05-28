@@ -1,10 +1,5 @@
-from cache.cacheL1 import CacheL1
-from cache.controllerL1 import ControllerL1
-from core import Core
-from bus import Bus
-from chip import Chip
-from cache.controllerL2 import ControllerL2
 from cpuSystem import CpuSystem
+
 
 # cache = CacheL1()
 # lines = cache.getLines()
@@ -54,7 +49,7 @@ from cpuSystem import CpuSystem
 # hola, _ = controller.controlCache("RM", 7, 100, "CH0,P1,0", None)
 # print(hola)
 # controller.getCache().printCache()
-
-cpu = CpuSystem()
-cpu.start()
-cpu.join()
+if __name__ == '__main__':
+  cpu = CpuSystem()
+  cpu.start()
+  cpu.join()

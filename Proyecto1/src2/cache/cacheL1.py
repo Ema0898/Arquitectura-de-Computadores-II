@@ -45,10 +45,12 @@ class CacheL1:
       self._lines.append(CacheLineL1())
 
   def getLine(self, direction):
-    return self._lines[direction % 2]
+    for line in self._lines:
+      if line.getTag() == direction:
+        return line
 
-  def getLineByIndex(self, index):
-    return self._lines[index]
+  def getLineByIndex(self, direction):
+    return self._lines[direction % 2]
 
   def setLineByIndex(self, index, state, tag, data):
     self._lines[index].setTag(tag)
@@ -67,3 +69,4 @@ class CacheL1:
           self._lines[i].getData(),
           self._lines[i].getTag()
       ))
+
