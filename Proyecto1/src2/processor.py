@@ -16,7 +16,7 @@ class Processor(threading.Thread):
     self._storageOut = storageOut
     self._storageIn = storageIn
 
-    LOG_FILENAME = 'logs/processors'
+    LOG_FILENAME = 'logs/processorsCH{}{}'.format(chipNumber, name)
     self._logging = setup_logger(LOG_FILENAME, "{}.log".format(LOG_FILENAME))
 
   def run(self):
@@ -24,6 +24,8 @@ class Processor(threading.Thread):
     counter = 0
 
     while counter < 10:
+      self._storageIn.get()
+
       instr = round(np.random.normal(1, 1)) % 3
       direction = round(np.random.normal(8, 4)) % 16
       dirValue = round(np.random.normal(32768, 10000)) % 65536
@@ -36,10 +38,11 @@ class Processor(threading.Thread):
           'Generando instrucción {} para el procesador {} del chip {}.'.format(
               message, self._name, self._chipNumber))
 
-      self._storageIn.get()
-
       self._storageOut.put(message)
 
       time.sleep(1)
+
+      print("Processor CH{} {} counter = {}".format(
+          self._chipNumber, self._name, counter))
 
       counter += 1

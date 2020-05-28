@@ -18,7 +18,7 @@ class Core(threading.Thread):
     self._lock = lock
     self._name = name
 
-    self._cacheController = ControllerL1('CH{}'.format(chipNumber))
+    self._cacheController = ControllerL1('CH{}{}'.format(chipNumber, name))
     self._cpu = Processor(
         name, chipNumber, self._cpuQueueOut, self._cpuQueueIn)
     # self._cpu.setDaemon(True)

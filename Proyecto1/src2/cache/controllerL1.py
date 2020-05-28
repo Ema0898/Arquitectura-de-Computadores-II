@@ -29,8 +29,8 @@ class ControllerL1:
       if signal == 'RM':
         self._m_to_s(line, owner)
         # print('Stop System to Write on Memory')
-        logMsg = 'Obteniendo Read Miss del bus para el controlador cache {}'.format(
-            self._chipOwner)
+        logMsg = 'Obteniendo Read Miss del bus en la direccion {}, estando en el estado M'.format(
+            direction)
         logMsg += ' Pasando de M a S'
         self._logging.info(logMsg)
 
@@ -38,18 +38,18 @@ class ControllerL1:
         #print("Broadcast Switch")
         self._m_to_i(line, owner)
 
-        logMsg = 'Obteniendo Write Miss del bus para el controlador cache {}'.format(
-            self._chipOwner)
+        logMsg = 'Obteniendo Write Miss del bus en la direccion {}, estando en el estado M'.format(
+            direction)
         logMsg += ' Pasando de M a I'
         self._logging.info(logMsg)
 
     elif line.getState() == 'S':
       if signal == 'WM':
-        print("Broadcast Switch")
+        #print("Broadcast Switch")
         self._s_to_i(line, owner)
 
-        logMsg = 'Obteniendo Write Miss del bus para el controlador cache {}'.format(
-            self._chipOwner)
+        logMsg = 'Obteniendo Write Miss del bus en la direccion {}, estando en el estado S'.format(
+            direction)
         logMsg += ' Pasando de S a I'
         self._logging.info(logMsg)
 
@@ -64,8 +64,8 @@ class ControllerL1:
         #print('Bus Write Miss')
         response = "WM"
 
-        logMsg = 'Obteniendo Write del procesador para el controlador cache {}'.format(
-            self._chipOwner)
+        logMsg = 'Obteniendo Write del procesador en la direccion {} con valor {}, estando en el estado M'.format(
+            direction, cpu_data)
         self._logging.info(logMsg)
 
     elif line.getState() == 'S':
@@ -76,16 +76,16 @@ class ControllerL1:
         #print('Bus Write Miss')
         response = "WM"
 
-        logMsg = 'Obteniendo Write del procesador para el controlador cache {}'.format(
-            self._chipOwner)
+        logMsg = 'Obteniendo Write del procesador en la direccion {} con valor {}, estando en el estado S'.format(
+            direction, cpu_data)
         logMsg += ' Pasando de S a M'
         self._logging.info(logMsg)
 
       elif signal == 'READ':
         response = "RM"
 
-        logMsg = 'Obteniendo Read del procesador para el controlador cache {}'.format(
-            self._chipOwner)
+        logMsg = 'Obteniendo Read del procesador en la direccion {}, estando en el estado S'.format(
+            direction)
         self._logging.info(logMsg)
 
     elif line.getState() == 'I':
@@ -96,8 +96,8 @@ class ControllerL1:
         # print('Bus Write Miss')
         response = "WM"
 
-        logMsg = 'Obteniendo Write del procesador para el controlador cache {}'.format(
-            self._chipOwner)
+        logMsg = 'Obteniendo Write del procesador en la direccion {} con valor {}, estando en el estado I'.format(
+            direction, cpu_data)
         logMsg += ' Pasando de I a M'
         self._logging.info(logMsg)
 
@@ -106,8 +106,8 @@ class ControllerL1:
         # print('Bus Read Miss')
         response = "RM"
 
-        logMsg = 'Obteniendo Read del procesador para el controlador cache {}'.format(
-            self._chipOwner)
+        logMsg = 'Obteniendo Read del procesador en la direccion {}, estando en el estado I'.format(
+            direction)
         logMsg += ' Pasando de I a S'
         self._logging.info(logMsg)
 
