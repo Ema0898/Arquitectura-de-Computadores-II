@@ -44,7 +44,7 @@ class CpuSystem(threading.Thread):
     self._startChips()
     counter = 0
 
-    while counter < 20:
+    while counter < 40:
 
       memoryPetition = self._chipQueueOut.get().split(',')
 

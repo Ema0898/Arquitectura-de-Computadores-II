@@ -42,7 +42,7 @@ class Processor(threading.Thread):
 
       time.sleep(1)
 
-      print("Processor CH{} {} counter = {}".format(
-          self._chipNumber, self._name, counter))
+      # print("Processor CH{} {} counter = {}".format(
+      #     self._chipNumber, self._name, counter))
 
       counter += 1

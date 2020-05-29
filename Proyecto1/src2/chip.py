@@ -28,11 +28,20 @@ class Chip(threading.Thread):
     self._l2queue1 = l2queue1
     self._l2queue2 = l2queue2
 
+    # self.guiQueue = guiQueue
+    # self.mainwin = mainwin
+
     self._controller = ControllerL2(self._chipName)
 
   def _broadcast(self, data):
     for i in range(2):
       self._queuesOut[i].put(data)
+
+  def _broadcastOnlyOne(self, data, owner):
+    if owner == "P0":
+      self._queuesOut[1].put(data)
+    elif owner == "P1":
+      self._queuesOut[0].put(data)
 
   def _startCores(self):
 
@@ -52,7 +61,7 @@ class Chip(threading.Thread):
     for i in range(2):
       self._queuesOut[i].put("Ready")
 
-    while (counter < 10):
+    while (counter < 20):
 
       busPetition = self._queuesIn.get()
       busSplit = busPetition.split(',')
@@ -89,7 +98,9 @@ class Chip(threading.Thread):
       if writeMissL2:
         self._broadcast("{},{}".format("WM", extL2Return[1]))
       else:
-        self._broadcast("{},{}".format(busSplit[3], busSplit[1]))
+        self._broadcastOnlyOne("{},{}".format(
+            busSplit[3], busSplit[1]), busSplit[0])
+      #self._broadcast("{},{}".format(busSplit[3], busSplit[1]))
 
       # Set processor data in case of Read Miss
       if busSplit[3] == "RM":
@@ -97,15 +108,21 @@ class Chip(threading.Thread):
           self._controller.writeCache(
               int(busSplit[1]), memReturn, [owner])
         if busSplit[0] == "P0":
+          print("Writing.. for P0 {}".format(self._chipName))
           if busReturn == "READ" and memReturn is not None:
             self._cores[0].writeCache(int(busSplit[1]), memReturn)
           else:
             self._cores[0].writeCache(int(busSplit[1]), busReturn)
 
         elif busSplit[0] == "P1":
+          print("Writing.. for P1 {}".format(self._chipName))
           if busReturn == "READ" and memReturn is not None:
-            self._cores[0].writeCache(int(busSplit[1]), memReturn)
+            self._cores[1].writeCache(int(busSplit[1]), memReturn)
           else:
-            self._cores[0].writeCache(int(busSplit[1]), busReturn)
+            self._cores[1].writeCache(int(busSplit[1]), busReturn)
 
       counter += 1
+
+      # self.guiQueue.put("Chip {}".format(counter))
+      # self.mainwin.event_generate('<<MessageGenerated>>')
+      # time.sleep(1)
