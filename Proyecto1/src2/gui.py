@@ -8,7 +8,7 @@ root = tk.Tk()
 
 titlesL1 = ['Bloque', 'Estado', 'Dirección', 'Dato']
 titlesL2 = ['Bloque', 'Estado', 'Dueño', 'Dirección', 'Dato']
-titlesMem = ['Dirección', 'Dato', 'Dueño']
+titlesMem = ['Dirección', 'Dueño', 'Dato']
 
 tableTitlesL1 = ['Cache L1 P0 CH0', 'Cache L1 P1 CH0',
                  'Cache L1 P0 CH1', 'Cache L1 P1 CH1']
@@ -59,8 +59,8 @@ def processMemTables(storage, event, table):
   msg = storage.get()
 
   for i in range(16):
-    table.set(i + 1, 1, msg[i].getData())
-    table.set(i + 1, 2, msg[i].getOwner())
+    table.set(i + 1, 1, msg[i].getOwner())
+    table.set(i + 1, 2, msg[i].getData())
 
 
 def createProcessorLabel():
@@ -79,7 +79,8 @@ def createProcessorLabel():
 
   for i in range(4):
     pLabel = tk.Label(root)
-    pLabel.config(bg=bgColor, text='WRITE,15,1')
+    # pLabel.config(bg=bgColor, text='WRITE,15,1')
+    pLabel.config(bg=bgColor)
     pLabel.place(x=x2[i], y=y)
     pArr.append(pLabel)
 
@@ -141,31 +142,55 @@ def createMemoryTable():
 
 def main():
   global tMem, l1Arr, l2Arr, pArr
+  queueArr = []
 
   createProcessorLabel()
   createL1Tables()
   createL2Tables()
   createMemoryTable()
 
-  message_queue = queue.Queue()
-  queue2 = queue.Queue()
-  queue3 = queue.Queue()
-  queue4 = queue.Queue()
+  for _ in range(11):
+    queueArr.append(queue.Queue())
 
+  # Processor Labels Events
+  root.bind('<<P0CH0>>', lambda e: processProcessorLabel(
+      queueArr[2], e, pArr[0]))
+
+  root.bind('<<P1CH0>>', lambda e: processProcessorLabel(
+      queueArr[4], e, pArr[1]))
+
+  root.bind('<<P0CH1>>', lambda e: processProcessorLabel(
+      queueArr[7], e, pArr[2]))
+
+  root.bind('<<P1CH1>>', lambda e: processProcessorLabel(
+      queueArr[9], e, pArr[3]))
+
+  # L1 Tables Events
   root.bind('<<L1CH0P0>>', lambda e: processL1Tables(
-      message_queue, e, l1Arr[0]))
+      queueArr[3], e, l1Arr[0]))
 
+  root.bind('<<L1CH0P1>>', lambda e: processL1Tables(
+      queueArr[5], e, l1Arr[1]))
+
+  root.bind('<<L1CH1P0>>', lambda e: processL1Tables(
+      queueArr[8], e, l1Arr[2]))
+
+  root.bind('<<L1CH1P1>>', lambda e: processL1Tables(
+      queueArr[10], e, l1Arr[3]))
+
+  # L2 Tables Events
   root.bind('<<L2CH0>>', lambda e: processL2Tables(
-      queue2, e, l2Arr[0]))
+      queueArr[1], e, l2Arr[0]))
 
+  root.bind('<<L2CH1>>', lambda e: processL2Tables(
+      queueArr[6], e, l2Arr[1]))
+
+  # Memory Table Event
   root.bind('<<MEM>>', lambda e: processMemTables(
-      queue3, e, tMem))
+      queueArr[0], e, tMem))
 
-  root.bind('<<CPU>>', lambda e: processProcessorLabel(
-      queue4, e, pArr[0]))
-
-  # cpu = CPUSystem(root, message_queue, queue2, queue3, queue4, 1)
-  # cpu.start()
+  cpu = CpuSystem(queueArr, root)
+  cpu.start()
 
   root.configure(background=bgColor)
   root.attributes('-zoomed', True)

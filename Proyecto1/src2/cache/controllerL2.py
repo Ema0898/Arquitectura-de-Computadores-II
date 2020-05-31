@@ -25,11 +25,11 @@ class ControllerL2:
     if signal == "" or line is None:
       return
 
-    print("Processing L2 callback")
+    #print("Processing L2 callback")
     if line.getState() == 'DM':
       if signal == 'WML2':
         self._dm_to_di(line)
-        print("Broadcast Invalid for L1")
+        #print("Broadcast Invalid for L1")
 
         logMsg = 'Llegó un Write Miss externo para el chip {} en la dirección {} estando en DM'.format(
             self._chipOwner, direction)
@@ -50,7 +50,7 @@ class ControllerL2:
     elif line.getState() == 'DS':
       if signal == 'WML2':
         self._ds_to_di(line)
-        print("Broadcast Invalid for L1")
+        #print("Broadcast Invalid for L1")
 
         logMsg = 'Llegó un Write Miss externo para el chip {} en la dirección {} estando en DS'.format(
             self._chipOwner, direction)

@@ -59,6 +59,9 @@ class CacheL2:
     self._lines[index].setOwners(owners)
     # self.printCache()
 
+  def getLines(self):
+    return self._lines
+
   def printCache(self):
     for i in range(4):
       print("{}, {}, {}, {}".format(

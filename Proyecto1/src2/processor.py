@@ -7,7 +7,7 @@ from log import setup_logger
 
 
 class Processor(threading.Thread):
-  def __init__(self, name, chipNumber, storageOut, storageIn):
+  def __init__(self, name, chipNumber, storageOut, storageIn, mainwin, guiQueue):
     threading.Thread.__init__(self)
 
     self._name = name
@@ -15,6 +15,9 @@ class Processor(threading.Thread):
     self._instructions = ["READ", "CALC", "WRITE"]
     self._storageOut = storageOut
     self._storageIn = storageIn
+
+    self._mainwin = mainwin
+    self._guiQueue = guiQueue
 
     LOG_FILENAME = 'logs/processorsCH{}{}'.format(chipNumber, name)
     self._logging = setup_logger(LOG_FILENAME, "{}.log".format(LOG_FILENAME))
@@ -40,9 +43,10 @@ class Processor(threading.Thread):
 
       self._storageOut.put(message)
 
-      time.sleep(1)
+      self._guiQueue.put('{},{},{}'.format(cpuSignal, direction, dirValue))
+      self._mainwin.event_generate(
+          '<<{}CH{}>>'.format(self._name, self._chipNumber))
 
-      # print("Processor CH{} {} counter = {}".format(
-      #     self._chipNumber, self._name, counter))
+      time.sleep(1)
 
       counter += 1

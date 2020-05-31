@@ -8,12 +8,11 @@ from mainMemory import MainMemory
 
 class CpuSystem(threading.Thread):
 
-  def __init__(self):
+  def __init__(self, guiQueues, mainwin):
     threading.Thread.__init__(self)
 
-    # self.guiQueue = guiQueue
-    # self.mainwin = mainwin
-    # self._lock = threading.Lock()
+    self._guiQueues = guiQueues
+    self._mainwin = mainwin
 
     self._chipQueueIn = []
     self._chipQueueOut = queue.Queue()
@@ -32,10 +31,11 @@ class CpuSystem(threading.Thread):
 
     self._chips.append(
         Chip(0, self._chipLock, self._chipQueueIn[0], self._chipQueueOut,
-             self._l2queue1, self._l2queue2))
+             self._l2queue1, self._l2queue2, self._guiQueues[1:6], self._mainwin))
+
     self._chips.append(
         Chip(1, self._chipLock, self._chipQueueIn[1], self._chipQueueOut,
-             self._l2queue2, self._l2queue1))
+             self._l2queue2, self._l2queue1, self._guiQueues[6:11], self._mainwin))
 
     self._chips[0].start()
     self._chips[1].start()
@@ -62,8 +62,8 @@ class CpuSystem(threading.Thread):
 
       # self._lock.acquire()
 
-      # self.guiQueue.put("Hola {}".format(counter))
-      # self.mainwin.event_generate('<<MessageGenerated>>')
+      self._guiQueues[0].put(self._memory.getMem())
+      self._mainwin.event_generate('<<MEM>>')
       # time.sleep(3)
 
       # self._lock.release()

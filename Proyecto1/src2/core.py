@@ -7,7 +7,7 @@ from processor import Processor
 
 
 class Core(threading.Thread):
-  def __init__(self, name, chipNumber, busQueueOut, busQueueIn, lock):
+  def __init__(self, name, chipNumber, busQueueOut, busQueueIn, lock, mainwin, guiQueues):
     threading.Thread.__init__(self)
 
     self._cpuQueueOut = queue.Queue()
@@ -18,9 +18,14 @@ class Core(threading.Thread):
     self._lock = lock
     self._name = name
 
+    self._chipNumber = chipNumber
+
+    self._mainwin = mainwin
+    self._guiQueues = guiQueues
+
     self._cacheController = ControllerL1('CH{}{}'.format(chipNumber, name))
     self._cpu = Processor(
-        name, chipNumber, self._cpuQueueOut, self._cpuQueueIn)
+        name, chipNumber, self._cpuQueueOut, self._cpuQueueIn, self._mainwin, self._guiQueues[0])
     # self._cpu.setDaemon(True)
     self._cpu.start()
 
@@ -55,3 +60,7 @@ class Core(threading.Thread):
       self._lock.release()
 
       counter += 1
+
+      self._guiQueues[1].put(self._cacheController.getCache().getLines())
+      self._mainwin.event_generate(
+          '<<L1CH{}{}>>'.format(self._chipNumber, self._name))

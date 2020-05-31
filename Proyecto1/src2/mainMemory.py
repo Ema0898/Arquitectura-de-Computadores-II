@@ -28,15 +28,14 @@ class MainMemory:
     LOG_FILENAME = 'logs/memory'
     self._logging = setup_logger(LOG_FILENAME, "{}.log".format(LOG_FILENAME))
 
-    for i in range(16):
+    for _ in range(16):
       self._mem.append(MemoryLine())
-      self._mem[i].setData(round(np.random.normal(32768, 10000)) % 65536)
 
   def controlMemory(self, signal, owner, direction, value, chip):
     if signal == "WRITE":
       #print("Write data to memory from {}".format(chip))
-      self._mem[direction].setData("{}{}".format(chip, owner))
-      self._mem[direction].setOwner(owner)
+      self._mem[direction].setData(value)
+      self._mem[direction].setOwner("{}{}".format(chip, owner))
 
       logMsg = "Escribiendo {} en la direccion {} y para el dueño {}".format(
           value, direction, owner)
@@ -48,3 +47,6 @@ class MainMemory:
       self._logging.info(logMsg)
 
       return self._mem[direction].getData()
+
+  def getMem(self):
+    return self._mem

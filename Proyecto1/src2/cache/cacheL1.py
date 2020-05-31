@@ -60,6 +60,9 @@ class CacheL1:
     self._lines[index].setDBit(0)
     # self.printCache()
 
+  def getLines(self):
+    return self._lines
+
   def printCache(self):
     for i in range(2):
       print("{}, {}, {}, {}, {}".format(
@@ -69,4 +72,3 @@ class CacheL1:
           self._lines[i].getData(),
           self._lines[i].getTag()
       ))
-
