@@ -37,6 +37,9 @@ class Core(threading.Thread):
     self._mainwin.event_generate(
         '<<L1CH{}{}>>'.format(self._chipNumber, self._name))
 
+  def getCache(self):
+    return self._cacheController.getCache()
+
   def run(self):
     counter = 0
     while True:

@@ -48,6 +48,6 @@ class Processor(threading.Thread):
       self._mainwin.event_generate(
           '<<{}CH{}>>'.format(self._name, self._chipNumber))
 
-      time.sleep(1)
+      time.sleep(5)
 
       counter += 1

@@ -128,6 +128,12 @@ class Chip(threading.Thread):
 
       counter += 1
 
+      self._guiQueues[2].put_nowait(self._cores[0].getCache().getLines())
+      self._mainwin.event_generate('<<L1CH{}P0>>'.format(self._chipNumber))
+
+      self._guiQueues[4].put_nowait(self._cores[1].getCache().getLines())
+      self._mainwin.event_generate('<<L1CH{}P1>>'.format(self._chipNumber))
+
       self._guiQueues[0].put_nowait(self._controller.getCache().getLines())
       self._mainwin.event_generate('<<L2CH{}>>'.format(self._chipNumber))
       # time.sleep(1)
