@@ -19,7 +19,7 @@ class Processor(threading.Thread):
     self._mainwin = mainwin
     self._guiQueue = guiQueue
 
-    LOG_FILENAME = 'logs/processorsCH{}{}'.format(chipNumber, name)
+    LOG_FILENAME = 'logs/system'
     self._logging = setup_logger(LOG_FILENAME, "{}.log".format(LOG_FILENAME))
 
   def run(self):

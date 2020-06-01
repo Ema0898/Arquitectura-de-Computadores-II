@@ -1,45 +1,77 @@
-import numpy as np
+import queue
+import threading
 import time
 
+from cache.controllerL1 import ControllerL1
+from processor import Processor
 
-class Core:
-  def __init__(self, name, chipNumber, storage, mainwin, lock):
 
-    self.name = name
-    self.chipNumber = chipNumber
-    self.instructions = ["READ", "CALC", "WRITE"]
-    self.storage = storage
-    self.mainwin = mainwin
-    self.lock = lock
+class Core(threading.Thread):
+  def __init__(self, name, chipNumber, busQueueOut, busQueueIn, lock, mainwin, guiQueues):
+    threading.Thread.__init__(self)
+
+    self._cpuQueueOut = queue.Queue()
+    self._cpuQueueIn = queue.Queue()
+    self._busQueueIn = busQueueIn
+    self._busQueueOut = busQueueOut
+    self._thread = 0
+    self._lock = lock
+    self._name = name
+
+    self._chipNumber = chipNumber
+
+    self._mainwin = mainwin
+    self._guiQueues = guiQueues
+
+    self._cacheController = ControllerL1('CH{}{}'.format(chipNumber, name))
+    self._cpu = Processor(
+        name, chipNumber, self._cpuQueueOut, self._cpuQueueIn, self._mainwin, self._guiQueues[0])
+    # self._cpu.setDaemon(True)
+    self._cpu.start()
+
+  def writeCache(self, direction, value):
+    # print("Write cache for {}".format(self._name))
+    self._cacheController.writeCache(direction, value)
+
+    self._guiQueues[1].put_nowait(self._cacheController.getCache().getLines())
+    self._mainwin.event_generate(
+        '<<L1CH{}{}>>'.format(self._chipNumber, self._name))
 
   def run(self):
-
     counter = 0
+    while True:
 
-    while counter < 5:
-      instr = round(np.random.normal(1, 1)) % 3
-      message = ""
+      bus_msg = self._busQueueIn.get()
 
-      if (instr == 0):
-        dir = round(np.random.normal(8, 4)) % 16
-        message = '{},{}: {} {}'.format(
-            self.name, self.chipNumber, self.instructions[instr], dir)
-      elif (instr == 1):
-        message = '{},{}: {}'.format(
-            self.name, self.chipNumber, self.instructions[instr])
-      else:
-        dir = round(np.random.normal(8, 4)) % 16
-        value = round(np.random.normal(32768, 10000)) % 65536
-        message = '{},{}: {} {};{}'.format(
-            self.name, self.chipNumber, self.instructions[instr], dir, value)
+      if bus_msg != "Ready":
+        msgSplit = bus_msg.split(',')
+        self._cacheController.msiMachineBus(
+            msgSplit[0], int(msgSplit[1]), self._name)
+        self._guiQueues[1].put_nowait(
+            self._cacheController.getCache().getLines())
+        self._mainwin.event_generate(
+            '<<L1CH{}{}>>'.format(self._chipNumber, self._name))
+
+      self._cpuQueueIn.put("Ready")
+      cpu_msg = self._cpuQueueOut.get().split(',')
+
+      # Check processor signals
+      busDataOut = self._cacheController.msiMachineProcessor(
+          cpu_msg[1], int(cpu_msg[2]), int(cpu_msg[3]), self._name)
+
+      self._lock.acquire()
+
+      # Write to bus
+      self._busQueueOut.put("{},{},{},{}".format(
+          cpu_msg[0], cpu_msg[2], cpu_msg[3], busDataOut))
+
+      self._lock.release()
 
       counter += 1
 
-      self.lock.acquire()
+      self._guiQueues[1].put_nowait(
+          self._cacheController.getCache().getLines())
+      self._mainwin.event_generate(
+          '<<L1CH{}{}>>'.format(self._chipNumber, self._name))
 
-      print(message)
-      self.storage.put(message)
-      self.mainwin.event_generate('<<MessageGenerated>>')
-      time.sleep(3)
-
-      self.lock.release()
+      # time.sleep(1)

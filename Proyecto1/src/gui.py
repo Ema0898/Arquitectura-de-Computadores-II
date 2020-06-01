@@ -33,7 +33,8 @@ def processProcessorLabel(storage, event, label):
   elif msg[0] == 'CALC':
     text.set(msg[0])
   else:
-    text.set('{},{},{}'.format(msg[0], msg[1], msg[2]))
+    hexValue = int(msg[2])
+    text.set('{},{},{}'.format(msg[0], msg[1], '{:04X}'.format(hexValue)))
 
   label.config(textvariable=text)
 
@@ -44,7 +45,7 @@ def processL1Tables(storage, event, table):
   for i in range(2):
     table.set(i + 1, 1, msg[i].getState())
     table.set(i + 1, 2, msg[i].getTag())
-    table.set(i + 1, 3, msg[i].getData())
+    table.set(i + 1, 3, '{:04X}'.format(msg[i].getData()))
 
 
 def processL2Tables(storage, event, table):
@@ -54,7 +55,7 @@ def processL2Tables(storage, event, table):
     table.set(i + 1, 1, msg[i].getState())
     table.set(i + 1, 2, msg[i].getOwners())
     table.set(i + 1, 3, msg[i].getTag())
-    table.set(i + 1, 4, msg[i].getData())
+    table.set(i + 1, 4, '{:04X}'.format(msg[i].getData()))
 
 
 def processMemTables(storage, event, table):
@@ -62,7 +63,7 @@ def processMemTables(storage, event, table):
 
   for i in range(16):
     table.set(i + 1, 1, msg[i].getOwner())
-    table.set(i + 1, 2, msg[i].getData())
+    table.set(i + 1, 2, '{:04X}'.format(msg[i].getData()))
 
 
 def createProcessorLabel():

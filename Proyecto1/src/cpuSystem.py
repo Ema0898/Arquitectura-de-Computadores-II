@@ -62,7 +62,7 @@ class CpuSystem(threading.Thread):
 
       # self._lock.acquire()
 
-      self._guiQueues[0].put(self._memory.getMem())
+      self._guiQueues[0].put_nowait(self._memory.getMem())
       self._mainwin.event_generate('<<MEM>>')
       # time.sleep(1)
 

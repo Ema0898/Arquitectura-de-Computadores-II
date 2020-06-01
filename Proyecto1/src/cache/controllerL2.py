@@ -8,7 +8,7 @@ class ControllerL2:
 
     self._chipOwner = chipOwner
 
-    LOG_FILENAME = 'logs/cacheL2{}'.format(self._chipOwner)
+    LOG_FILENAME = 'logs/system'
     self._logging = setup_logger(LOG_FILENAME, "{}.log".format(LOG_FILENAME))
 
   def writeCache(self, direction, value, owner):
@@ -31,7 +31,7 @@ class ControllerL2:
         self._dm_to_di(line)
         #print("Broadcast Invalid for L1")
 
-        logMsg = 'Llegó un Write Miss externo para el chip {} en la dirección {} estando en DM'.format(
+        logMsg = 'Llegó un Write Miss externo para la L2 del chip {} en la dirección {} estando en DM'.format(
             self._chipOwner, direction)
         logMsg += ', invalidando los dueños. Pasando de estado DM a estado DI.'
         self._logging.info(logMsg)
@@ -41,7 +41,7 @@ class ControllerL2:
       elif signal == "RML2":
         self._dm_to_ds(line, 'E')
 
-        logMsg = 'Llegó un Read Miss externo para el chip {} en la dirección {} estando en DM'.format(
+        logMsg = 'Llegó un Read Miss externo para la L2 del chip {} en la dirección {} estando en DM'.format(
             self._chipOwner, direction)
         logMsg += ', agregando dueño {}. Pasando de estado DM a estado DS.'.format(
             extOwner)
@@ -52,7 +52,7 @@ class ControllerL2:
         self._ds_to_di(line)
         #print("Broadcast Invalid for L1")
 
-        logMsg = 'Llegó un Write Miss externo para el chip {} en la dirección {} estando en DS'.format(
+        logMsg = 'Llegó un Write Miss externo para la L2 del chip {} en la dirección {} estando en DS'.format(
             self._chipOwner, direction)
         logMsg += ', invalidando los dueños. Pasando de estado DS a estado DI.'
         self._logging.info(logMsg)
@@ -62,7 +62,7 @@ class ControllerL2:
       elif signal == "RML2":
         line.appendOwner('E')
 
-        logMsg = 'Llegó un Read Miss externo para el chip {} en la dirección {} estando en DI'.format(
+        logMsg = 'Llegó un Read Miss externo para la L2 del chip {} en la dirección {} estando en DI'.format(
             self._chipOwner, direction)
         logMsg += ', añadiendo {} a los dueños. Pasando de estado DS a estado DI.'.format(
             extOwner)
@@ -72,7 +72,7 @@ class ControllerL2:
       if signal == "RML2":
         self._di_to_ds(line, extOwner)
 
-        logMsg = 'Llegó un Read Miss externo para el chip {} en la dirección {} estando en DI'.format(
+        logMsg = 'Llegó un Read Miss externo para la L2 del chip {} en la dirección {} estando en DI'.format(
             self._chipOwner, direction)
         logMsg += ', añadiendo {} a los dueños. Pasando de estado DI a estado DS.'.format(
             extOwner)
@@ -91,7 +91,7 @@ class ControllerL2:
         self._dm_to_ds(line, owner)
         response = (line.getData(), "")
 
-        logMsg = 'Llegó un Read Miss para el chip {} en la dirección {} estando en DM'.format(
+        logMsg = 'Llegó un Read Miss para la L2 del chip {} en la dirección {} estando en DM'.format(
             self._chipOwner, direction)
         logMsg += '. Añadiendo {} a los dueños. Pasando de estado DM a estado DS.'.format(
             owner)
@@ -103,7 +103,7 @@ class ControllerL2:
         #print('Bus Write Miss')
         response = ("WRITE", "WML2")
 
-        logMsg = 'Llegó un Write Miss para el chip {} en la dirección {} estando en DM'.format(
+        logMsg = 'Llegó un Write Miss para la L2 del chip {} en la dirección {} estando en DM'.format(
             self._chipOwner, direction)
         logMsg += '. Escribiendo en Memoria. Generando Write Miss externo.'
         self._logging.info(logMsg)
@@ -116,7 +116,7 @@ class ControllerL2:
         #print('Bus Write Miss')
         response = ("WRITE", "WML2")
 
-        logMsg = 'Llegó un Write Miss para el chip {} en la dirección {} estando en DS'.format(
+        logMsg = 'Llegó un Write Miss para la L2 del chip {} en la dirección {} estando en DS'.format(
             self._chipOwner, direction)
         logMsg += '. Escribiendo en Memoria. Generando Write Miss externo.'
         logMsg += ' Dejando {} como único dueño. Pasando de estado DS a DM.'.format(
@@ -127,7 +127,7 @@ class ControllerL2:
         line.appendOwner(owner)
         response = (line.getData(), "RML2")
 
-        logMsg = 'Llegó un Read Miss para el chip {} en la dirección {} estando en DS'.format(
+        logMsg = 'Llegó un Read Miss para la L2 del chip {} en la dirección {} estando en DS'.format(
             self._chipOwner, direction)
         logMsg += '. Agregando {} a los dueños'.format(owner)
         logMsg += '. Regresando dato en Cache. Generando Read Miss externo.'
@@ -141,7 +141,7 @@ class ControllerL2:
         #print('Bus Write Miss')
         response = ("WRITE", "WML2")
 
-        logMsg = 'Llegó un Write Miss para el chip {} en la dirección {} estando en DI'.format(
+        logMsg = 'Llegó un Write Miss para la L2 del chip {} en la dirección {} estando en DI'.format(
             self._chipOwner, direction)
         logMsg += '. Escribiendo dato en Memoria. Generando Write Miss externo.'
         logMsg += ' Dejando {} como único dueño. Pasando de estado DI a DM.'.format(
@@ -153,7 +153,7 @@ class ControllerL2:
         #print('Bus Read Miss')
         response = ("READ", "RML2")
 
-        logMsg = 'Llegó un Read Miss para el chip {} en la dirección {} estando en DI'.format(
+        logMsg = 'Llegó un Read Miss para la L2 del chip {} en la dirección {} estando en DI'.format(
             self._chipOwner, direction)
         logMsg += '. Obteniendo dato de Memoria. Generando Write Miss externo.'
         logMsg += ' Agregando {} a los dueños. Pasando de estado DI a DS.'.format(
