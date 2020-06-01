@@ -39,7 +39,7 @@ class ControllerL2:
         return True
 
       elif signal == "RML2":
-        self._dm_to_ds(line, extOwner)
+        self._dm_to_ds(line, 'E')
 
         logMsg = 'Llegó un Read Miss externo para el chip {} en la dirección {} estando en DM'.format(
             self._chipOwner, direction)
@@ -60,7 +60,7 @@ class ControllerL2:
         return True
 
       elif signal == "RML2":
-        line.appendOwner(extOwner)
+        line.appendOwner('E')
 
         logMsg = 'Llegó un Read Miss externo para el chip {} en la dirección {} estando en DI'.format(
             self._chipOwner, direction)

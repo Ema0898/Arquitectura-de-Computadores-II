@@ -9,15 +9,22 @@ class Table(tk.Frame):
     self._rows = rows
     self._columns = columns
 
-  def createTable(self, titles, titleColor, color, isCache):
+  def createTable(self, titles, titleColor, color, isCache, haveOwner, ownerPosition):
     for row in range(self._rows):
       current_row = []
       for column in range(self._columns):
         if row == 0:
-          label = tk.Label(
-              self, bg=titleColor, text=titles[column], borderwidth=0, width=9, font='Helvetica 10 bold')
+          if haveOwner and column == ownerPosition:
+            label = tk.Label(
+                self, bg=titleColor, text=titles[column], borderwidth=0, width=15, font='Helvetica 10 bold')
+          else:
+            label = tk.Label(
+                self, bg=titleColor, text=titles[column], borderwidth=0, width=9, font='Helvetica 10 bold')
         else:
-          label = tk.Label(self, bg=color, borderwidth=0, width=9)
+          if haveOwner and column == ownerPosition:
+            label = tk.Label(self, bg=color, borderwidth=0, width=15)
+          else:
+            label = tk.Label(self, bg=color, borderwidth=0, width=9)
         label.grid(row=row, column=column, sticky="nsew", padx=1, pady=1)
         current_row.append(label)
       self._widgets.append(current_row)

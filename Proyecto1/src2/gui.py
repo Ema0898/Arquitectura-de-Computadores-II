@@ -1,5 +1,7 @@
 import tkinter as tk
 import queue
+import shutil
+import os
 
 from cpuSystem import CpuSystem
 from table import Table
@@ -101,7 +103,7 @@ def createL1Tables():
 
   for i in range(4):
     t = Table(root, 3, 4)
-    t.createTable(titlesL1, '#5696fc', 'white', True)
+    t.createTable(titlesL1, '#5696fc', 'white', True, False, None)
     t.place(x=15 + (offset * i), y=y2)
     l1Arr.append(t)
 
@@ -112,7 +114,7 @@ def createL2Tables():
   x1 = [295, 895]
   y1 = 160
 
-  x2 = [150, 750]
+  x2 = [125, 725]
   y2 = 180
 
   for i in range(2):
@@ -123,7 +125,7 @@ def createL2Tables():
   # L2 tables
   for i in range(2):
     t = Table(root, 5, 5)
-    t.createTable(titlesL2, '#5696fc', 'white', True)
+    t.createTable(titlesL2, '#5696fc', 'white', True, True, 2)
     t.place(x=x2[i], y=y2)
     l2Arr.append(t)
 
@@ -136,13 +138,20 @@ def createMemoryTable():
   titleMem.place(x=570, y=330)
 
   tMem = Table(root, 17, 3)
-  tMem.createTable(titlesMem, '#5696fc', 'white', False)
-  tMem.place(x=520, y=350)
+  tMem.createTable(titlesMem, '#5696fc', 'white', False, True, 1)
+  tMem.place(x=495, y=350)
+
+
+def setupDirectories():
+  if not os.path.isdir('./logs'):
+    os.mkdir('./logs')
 
 
 def main():
   global tMem, l1Arr, l2Arr, pArr
   queueArr = []
+
+  setupDirectories()
 
   createProcessorLabel()
   createL1Tables()
@@ -194,6 +203,7 @@ def main():
 
   root.configure(background=bgColor)
   root.attributes('-zoomed', True)
+  root.resizable(False, False)
   root.mainloop()
 
 

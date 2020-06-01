@@ -35,7 +35,7 @@ class MainMemory:
     if signal == "WRITE":
       #print("Write data to memory from {}".format(chip))
       self._mem[direction].setData(value)
-      self._mem[direction].setOwner("{}{}".format(chip, owner))
+      self._mem[direction].setOwner("{}".format(owner))
 
       logMsg = "Escribiendo {} en la direccion {} y para el dueño {}".format(
           value, direction, owner)

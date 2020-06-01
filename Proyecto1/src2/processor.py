@@ -26,7 +26,7 @@ class Processor(threading.Thread):
 
     counter = 0
 
-    while counter < 10:
+    while True:
       self._storageIn.get()
 
       instr = round(np.random.normal(1, 1)) % 3
@@ -43,7 +43,8 @@ class Processor(threading.Thread):
 
       self._storageOut.put(message)
 
-      self._guiQueue.put('{},{},{}'.format(cpuSignal, direction, dirValue))
+      self._guiQueue.put_nowait(
+          '{},{},{}'.format(cpuSignal, direction, dirValue))
       self._mainwin.event_generate(
           '<<{}CH{}>>'.format(self._name, self._chipNumber))
 

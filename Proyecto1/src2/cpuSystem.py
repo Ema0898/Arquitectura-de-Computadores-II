@@ -44,7 +44,7 @@ class CpuSystem(threading.Thread):
     self._startChips()
     counter = 0
 
-    while counter < 40:
+    while True:
 
       memoryPetition = self._chipQueueOut.get().split(',')
 
@@ -64,7 +64,7 @@ class CpuSystem(threading.Thread):
 
       self._guiQueues[0].put(self._memory.getMem())
       self._mainwin.event_generate('<<MEM>>')
-      # time.sleep(3)
+      # time.sleep(1)
 
       # self._lock.release()
 

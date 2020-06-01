@@ -66,7 +66,7 @@ class Chip(threading.Thread):
     for i in range(2):
       self._queuesOut[i].put("Ready")
 
-    while (counter < 20):
+    while True:
 
       busPetition = self._queuesIn.get()
       busSplit = busPetition.split(',')
@@ -128,6 +128,6 @@ class Chip(threading.Thread):
 
       counter += 1
 
-      self._guiQueues[0].put(self._controller.getCache().getLines())
+      self._guiQueues[0].put_nowait(self._controller.getCache().getLines())
       self._mainwin.event_generate('<<L2CH{}>>'.format(self._chipNumber))
       # time.sleep(1)

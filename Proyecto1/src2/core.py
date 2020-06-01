@@ -33,9 +33,13 @@ class Core(threading.Thread):
     # print("Write cache for {}".format(self._name))
     self._cacheController.writeCache(direction, value)
 
+    self._guiQueues[1].put_nowait(self._cacheController.getCache().getLines())
+    self._mainwin.event_generate(
+        '<<L1CH{}{}>>'.format(self._chipNumber, self._name))
+
   def run(self):
     counter = 0
-    while (counter < 10):
+    while True:
 
       bus_msg = self._busQueueIn.get()
 
@@ -43,6 +47,10 @@ class Core(threading.Thread):
         msgSplit = bus_msg.split(',')
         self._cacheController.msiMachineBus(
             msgSplit[0], int(msgSplit[1]), self._name)
+        self._guiQueues[1].put_nowait(
+            self._cacheController.getCache().getLines())
+        self._mainwin.event_generate(
+            '<<L1CH{}{}>>'.format(self._chipNumber, self._name))
 
       self._cpuQueueIn.put("Ready")
       cpu_msg = self._cpuQueueOut.get().split(',')
@@ -61,6 +69,9 @@ class Core(threading.Thread):
 
       counter += 1
 
-      self._guiQueues[1].put(self._cacheController.getCache().getLines())
+      self._guiQueues[1].put_nowait(
+          self._cacheController.getCache().getLines())
       self._mainwin.event_generate(
           '<<L1CH{}{}>>'.format(self._chipNumber, self._name))
+
+      # time.sleep(1)
