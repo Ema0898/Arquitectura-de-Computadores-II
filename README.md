@@ -42,6 +42,6 @@ Si se está en Linux y se tiene instalado Python 2.7 y Python 3.X se debe ejecut
 python3 src/gui.py
 ```
 
-### Release History
+### Historial
 * 1.0.0
   * Se agrega la versión funcional del proyecto.
