@@ -32,12 +32,12 @@ pip3 install tkinter
 ```
 
 ### Ejecución
-Para ejecutar el programa se debe ejecutar el siguiente comando en la terminal de la raíz del proyecto
+Para ejecutar el programa se debe ejecutar el siguiente comando en la terminal en la carpeta Proyecto1
 ```
 python src/gui.py
 ```
 
-Si se está en Linux y se tiene instalado Python 2.7 y Python 3.X se debe ejecutar el siguiente comando en la raíz del proyecto
+Si se está en Linux y se tiene instalado Python 2.7 y Python 3.X se debe ejecutar el siguiente comando en la carpeta Proyecto1
 ```
 python3 src/gui.py
 ```
