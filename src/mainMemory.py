@@ -33,7 +33,6 @@ class MainMemory:
 
   def controlMemory(self, signal, owner, direction, value, chip):
     if signal == "WRITE":
-      #print("Write data to memory from {}".format(chip))
       self._mem[direction].setData(value)
       self._mem[direction].setOwner("{}".format(owner))
 
@@ -42,7 +41,6 @@ class MainMemory:
       self._logging.info(logMsg)
 
     elif signal == "READ":
-      #print("Returning data from memory to {}".format(chip))
       logMsg = "Retornando el valor de memoria principal para la direccion {}".format(
           direction)
       self._logging.info(logMsg)

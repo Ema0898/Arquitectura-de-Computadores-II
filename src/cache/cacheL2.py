@@ -57,7 +57,6 @@ class CacheL2:
     self._lines[index].setData(data)
     self._lines[index].setState(state)
     self._lines[index].setOwners(owners)
-    # self.printCache()
 
   def getLines(self):
     return self._lines

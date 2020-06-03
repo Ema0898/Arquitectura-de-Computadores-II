@@ -48,9 +48,6 @@ class CpuSystem(threading.Thread):
 
       memoryPetition = self._chipQueueOut.get().split(',')
 
-      # print("Procesing Memory Request")
-      # print("Got {} from memory".format(memoryPetition))
-
       memoryReturn = self._memory.controlMemory(
           memoryPetition[0], memoryPetition[1], int(memoryPetition[2]),
           int(memoryPetition[3]), memoryPetition[4])
@@ -59,14 +56,10 @@ class CpuSystem(threading.Thread):
         self._chipQueueIn[0].put(memoryReturn)
       elif memoryPetition[4] == "CH1":
         self._chipQueueIn[1].put(memoryReturn)
-
-      # self._lock.acquire()
+     
 
       self._guiQueues[0].put_nowait(self._memory.getMem())
-      self._mainwin.event_generate('<<MEM>>')
-      # time.sleep(1)
-
-      # self._lock.release()
+      self._mainwin.event_generate('<<MEM>>')      
 
       counter += 1
 

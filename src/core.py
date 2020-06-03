@@ -26,11 +26,10 @@ class Core(threading.Thread):
     self._cacheController = ControllerL1('CH{}{}'.format(chipNumber, name))
     self._cpu = Processor(
         name, chipNumber, self._cpuQueueOut, self._cpuQueueIn, self._mainwin, self._guiQueues[0])
-    # self._cpu.setDaemon(True)
+    
     self._cpu.start()
 
   def writeCache(self, direction, value):
-    # print("Write cache for {}".format(self._name))
     self._cacheController.writeCache(direction, value)
 
     self._guiQueues[1].put_nowait(self._cacheController.getCache().getLines())
@@ -76,5 +75,3 @@ class Core(threading.Thread):
           self._cacheController.getCache().getLines())
       self._mainwin.event_generate(
           '<<L1CH{}{}>>'.format(self._chipNumber, self._name))
-
-      # time.sleep(1)

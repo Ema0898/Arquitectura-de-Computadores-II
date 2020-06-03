@@ -46,7 +46,6 @@ class Chip(threading.Thread):
   def _startCores(self):
 
     for _ in range(2):
-      # self._queuesIn.append(queue.Queue())
       self._queuesOut.append(queue.Queue())
 
     self._cores.append(
@@ -55,7 +54,7 @@ class Chip(threading.Thread):
     self._cores.append(
         Core("P" + str(1), self._chipNumber, self._queuesIn,
              self._queuesOut[1], self._lock, self._mainwin, self._guiQueues[3:5]))
-    # self._cores[i].setDaemon(True)
+    
     self._cores[0].start()
     self._cores[1].start()
 
@@ -105,7 +104,6 @@ class Chip(threading.Thread):
       else:
         self._broadcastOnlyOne("{},{}".format(
             busSplit[3], busSplit[1]), busSplit[0])
-      # self._broadcast("{},{}".format(busSplit[3], busSplit[1]))
 
       # Set processor data in case of Read Miss
       if busSplit[3] == "RM":
@@ -113,14 +111,12 @@ class Chip(threading.Thread):
           self._controller.writeCache(
               int(busSplit[1]), memReturn, [owner])
         if busSplit[0] == "P0":
-          #print("Writing.. for P0 {}".format(self._chipName))
           if busReturn == "READ" and memReturn is not None:
             self._cores[0].writeCache(int(busSplit[1]), memReturn)
           else:
             self._cores[0].writeCache(int(busSplit[1]), busReturn)
 
         elif busSplit[0] == "P1":
-          #print("Writing.. for P1 {}".format(self._chipName))
           if busReturn == "READ" and memReturn is not None:
             self._cores[1].writeCache(int(busSplit[1]), memReturn)
           else:
@@ -136,4 +132,3 @@ class Chip(threading.Thread):
 
       self._guiQueues[0].put_nowait(self._controller.getCache().getLines())
       self._mainwin.event_generate('<<L2CH{}>>'.format(self._chipNumber))
-      # time.sleep(1)

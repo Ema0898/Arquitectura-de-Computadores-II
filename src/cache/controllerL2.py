@@ -17,7 +17,6 @@ class ControllerL2:
     self._logging.info(logMsg)
 
     self.cache.setLineByIndex(direction % 4, "DS", owner, direction, value)
-    # self.cache.printCache()
 
   def msiMachineExtL2(self, signal, direction, extOwner):
     line = self.cache.getLine(direction)
@@ -25,11 +24,9 @@ class ControllerL2:
     if signal == "" or line is None:
       return
 
-    #print("Processing L2 callback")
     if line.getState() == 'DM':
       if signal == 'WML2':
         self._dm_to_di(line)
-        #print("Broadcast Invalid for L1")
 
         logMsg = 'Llegó un Write Miss externo para la L2 del chip {} en la dirección {} estando en DM'.format(
             self._chipOwner, direction)
@@ -50,7 +47,6 @@ class ControllerL2:
     elif line.getState() == 'DS':
       if signal == 'WML2':
         self._ds_to_di(line)
-        #print("Broadcast Invalid for L1")
 
         logMsg = 'Llegó un Write Miss externo para la L2 del chip {} en la dirección {} estando en DS'.format(
             self._chipOwner, direction)
@@ -100,7 +96,6 @@ class ControllerL2:
       elif signal == 'WM':
         line.setData(cpu_data)
         line.setTag(direction)
-        #print('Bus Write Miss')
         response = ("WRITE", "WML2")
 
         logMsg = 'Llegó un Write Miss para la L2 del chip {} en la dirección {} estando en DM'.format(
@@ -113,7 +108,6 @@ class ControllerL2:
         self._ds_to_dm(line, owner)
         line.setData(cpu_data)
         line.setTag(direction)
-        #print('Bus Write Miss')
         response = ("WRITE", "WML2")
 
         logMsg = 'Llegó un Write Miss para la L2 del chip {} en la dirección {} estando en DS'.format(
@@ -138,7 +132,6 @@ class ControllerL2:
         self._di_to_dm(line, owner)
         line.setData(cpu_data)
         line.setTag(direction)
-        #print('Bus Write Miss')
         response = ("WRITE", "WML2")
 
         logMsg = 'Llegó un Write Miss para la L2 del chip {} en la dirección {} estando en DI'.format(
@@ -150,7 +143,6 @@ class ControllerL2:
 
       elif signal == 'RM':
         self._di_to_ds(line, owner)
-        #print('Bus Read Miss')
         response = ("READ", "RML2")
 
         logMsg = 'Llegó un Read Miss para la L2 del chip {} en la dirección {} estando en DI'.format(
@@ -168,33 +160,27 @@ class ControllerL2:
   def _dm_to_ds(self, line, owner):
     line.setState('DS')
     line.appendOwner(owner)
-    #print("DM to DS")
 
   def _dm_to_di(self, line):
     line.setState('DI')
     line.cleanOwners()
-    #print("DM to DI")
 
   def _ds_to_dm(self, line, owner):
     line.setState('DM')
     line.cleanOwners()
     line.appendOwner(owner)
-    #print("DS to DM")
 
   def _ds_to_di(self, line):
     line.setState('DI')
     line.cleanOwners()
-    #print("DS to DI")
 
   def _di_to_ds(self, line, owner):
     line.setState('DS')
     line.appendOwner(owner)
-    #print("DI to DS")
 
   def _di_to_dm(self, line, owner):
     line.setState('DM')
     line.appendOwner(owner)
-    #print("DI to DM")
 
   def getCache(self):
     return self.cache

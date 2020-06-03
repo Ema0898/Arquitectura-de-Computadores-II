@@ -203,8 +203,7 @@ def main():
   cpu.start()
 
   root.configure(background=bgColor)
-  root.attributes('-zoomed', True)
-  root.resizable(False, False)
+  root.attributes('-fullscreen', True)
   root.mainloop()
 
 

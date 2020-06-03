@@ -58,7 +58,6 @@ class CacheL1:
     self._lines[index].setState(state)
     self._lines[index].setVBit(1)
     self._lines[index].setDBit(0)
-    # self.printCache()
 
   def getLines(self):
     return self._lines
